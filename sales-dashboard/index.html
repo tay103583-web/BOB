@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Penjualan 2024</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-blue-700 text-white shadow-md">
+    <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide">📊 Dashboard Penjualan</h1>
+        <p class="text-blue-200 text-sm mt-0.5">Analisis Performa Bisnis 2024</p>
+      </div>
+      <div class="text-right">
+        <p class="text-blue-200 text-xs">Terakhir diperbarui</p>
+        <p id="last-updated" class="text-sm font-semibold"></p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-screen-xl mx-auto px-6 py-6 space-y-6">
+
+    <!-- FILTER PANEL -->
+    <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">🔍 Filter Data</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Periode Bulan</label>
+          <select id="filter-month" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="all">Semua Bulan</option>
+            <option value="1">Januari</option>
+            <option value="2">Februari</option>
+            <option value="3">Maret</option>
+            <option value="4">April</option>
+            <option value="5">Mei</option>
+            <option value="6">Juni</option>
+            <option value="7">Juli</option>
+            <option value="8">Agustus</option>
+            <option value="9">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Kategori Produk</label>
+          <select id="filter-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="all">Semua Kategori</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Furniture">Furniture</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Region</label>
+          <select id="filter-region" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="all">Semua Region</option>
+            <option value="Jawa">Jawa</option>
+            <option value="Sumatera">Sumatera</option>
+            <option value="Kalimantan">Kalimantan</option>
+            <option value="Bali">Bali</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Sales Person</label>
+          <select id="filter-salesperson" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="all">Semua Sales</option>
+            <option value="Andi">Andi</option>
+            <option value="Budi">Budi</option>
+            <option value="Citra">Citra</option>
+            <option value="Dina">Dina</option>
+            <option value="Eko">Eko</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-3 flex justify-end">
+        <button id="btn-reset" class="text-xs text-blue-600 hover:text-blue-800 font-medium underline">↺ Reset Filter</button>
+      </div>
+    </section>
+
+    <!-- KPI CARDS -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Total Revenue</p>
+        <p id="kpi-revenue" class="text-2xl font-bold text-blue-700 mt-1">—</p>
+        <p id="kpi-revenue-sub" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Total Profit</p>
+        <p id="kpi-profit" class="text-2xl font-bold text-green-600 mt-1">—</p>
+        <p id="kpi-margin" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Total Transaksi</p>
+        <p id="kpi-transactions" class="text-2xl font-bold text-purple-600 mt-1">—</p>
+        <p id="kpi-avg-order" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide">Unit Terjual</p>
+        <p id="kpi-units" class="text-2xl font-bold text-orange-500 mt-1">—</p>
+        <p id="kpi-avg-unit" class="text-xs text-gray-400 mt-1"></p>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW 1 -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4">📈 Revenue Bulanan</h3>
+        <canvas id="chart-monthly-revenue" height="220"></canvas>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4">🥧 Revenue per Kategori</h3>
+        <canvas id="chart-category" height="220"></canvas>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW 2 -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4">🌍 Revenue per Region</h3>
+        <canvas id="chart-region" height="220"></canvas>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4">🏆 Performa Sales Person</h3>
+        <canvas id="chart-salesperson" height="220"></canvas>
+      </div>
+    </section>
+
+    <!-- TOP PRODUCTS TABLE -->
+    <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <h3 class="text-sm font-semibold text-gray-700 mb-4">📦 Top Produk berdasarkan Revenue</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs text-gray-500 uppercase border-b border-gray-100">
+              <th class="text-left py-2 pr-4 font-semibold">#</th>
+              <th class="text-left py-2 pr-4 font-semibold">Produk</th>
+              <th class="text-left py-2 pr-4 font-semibold">Kategori</th>
+              <th class="text-right py-2 pr-4 font-semibold">Revenue</th>
+              <th class="text-right py-2 pr-4 font-semibold">Profit</th>
+              <th class="text-right py-2 font-semibold">Margin</th>
+            </tr>
+          </thead>
+          <tbody id="top-products-body" class="divide-y divide-gray-50">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RECENT TRANSACTIONS -->
+    <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-gray-700">🧾 Transaksi Terbaru</h3>
+        <span id="tx-count" class="text-xs text-gray-400"></span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs text-gray-500 uppercase border-b border-gray-100">
+              <th class="text-left py-2 pr-4 font-semibold">ID</th>
+              <th class="text-left py-2 pr-4 font-semibold">Tanggal</th>
+              <th class="text-left py-2 pr-4 font-semibold">Produk</th>
+              <th class="text-left py-2 pr-4 font-semibold">Region</th>
+              <th class="text-left py-2 pr-4 font-semibold">Sales</th>
+              <th class="text-right py-2 pr-4 font-semibold">Qty</th>
+              <th class="text-right py-2 font-semibold">Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-body" class="divide-y divide-gray-50">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="text-center text-xs text-gray-400 py-6 border-t border-gray-200 mt-6">
+    Dashboard Penjualan 2024 &bull; Dibuat dengan IBM Bob &bull; Chart.js &amp; Tailwind CSS
+  </footer>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
